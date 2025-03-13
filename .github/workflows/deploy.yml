@@ -17,7 +17,7 @@ jobs:
       - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
-          server: "Jose_dev_full_stack@starttofinish.com.br"
+          server: "ftp.starttofinish.com.br"
           username: "Jose_dev_full_stack"
           password: "29_Zezao_DevFull"
           server-dir: "public_html/jose/" #teste
