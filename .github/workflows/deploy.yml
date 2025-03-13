@@ -19,5 +19,4 @@ jobs:
         with:
           server: "ftp.starttofinish.com.br"
           username: "Jose_dev_full_stack@starttofinish.com.br"
-          password: "29_Zezao_DevFull"
-          server-dir: "public_html/jose/" #teste
+          password: "29_Zezao_DevFull" # sla
