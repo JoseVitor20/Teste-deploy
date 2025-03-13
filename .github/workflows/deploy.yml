@@ -19,5 +19,5 @@ jobs:
         with:
           server: "162.241.2.97"
           username: "Jose"
-          password: "29_Zezao_DevFull"
+          password: ""
           server-dir: "public_html/jose/"
