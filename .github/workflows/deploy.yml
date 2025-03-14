@@ -12,18 +12,11 @@ jobs:
 
     steps:
       - name: Obter o código mais recente
-        uses: actions/checkout@v4
-
-      - name: Teste de leitura dos Secrets
-        run: |
-          echo "Testando se os secrets foram lidos corretamente:"
-          echo "FTP_SERVER: ${{ secrets.FTP_SERVER }}"
-          echo "FTP_USER: ${{ secrets.FTP_USER }}"
-          echo "Password set: $(if [ -n '${{ secrets.FTP_PASSWORD }}' ]; then echo 'YES'; else echo 'NO'; fi)"
+        uses: actions/checkout@v2
 
       - name: Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.0.0
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }} # teste 3
+          password: ${{ secrets.FTP_PASSWORD }}
