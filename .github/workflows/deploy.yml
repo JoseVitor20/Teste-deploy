@@ -1,22 +1,39 @@
-name: Deploy website com push
+name: Deploy Laravel App to Hostgator
 
 on:
   push:
     branches:
-      - main
+      - main  # Altere para o branch que você deseja fazer deploy
 
 jobs:
-  web-deploy:
-    name: Deploy
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Obter o código mais recente
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Sync files
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.HOSTGATOR_SSH_KEY }}
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+
+    - name: Install dependencies
+      run: |
+        ssh -o StrictHostKeyChecking=no Jose_dev_full_stack@starttofinish.com.br "cd public_html && composer install --no-dev --optimize-autoloader"
+
+    - name: Run migrations
+      run: |
+        ssh -o StrictHostKeyChecking=no Jose_dev_full_stack@starttofinish.com.br "cd public_html && php artisan migrate --force"
+
+    - name: Deploy application
+      run: |
+        rsync -avz --exclude='.env' --exclude='.git' --exclude='node_modules' --exclude='storage' ./ Jose_dev_full_stack@starttofinish.com.br:${{ secrets.HOSTGATOR_DEPLOY_DIR }}
+        ssh -o StrictHostKeyChecking=no Jose_dev_full_stack@starttofinish.com.br "cd public_html && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+
+    - name: Restart services (if needed)
+      run: |
+        ssh -o StrictHostKeyChecking=no Jose_dev_full_stack@starttofinish.com.br "sudo service php-fpm restart"
