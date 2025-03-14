@@ -16,7 +16,7 @@ jobs:
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.0
       with:
-        ssh-private-key: id_rsa
+        ssh-private-key: ${{ secrets.HOSTGATOR_SSH_KEY }}
 
     - name: Install dependencies
       run: |
