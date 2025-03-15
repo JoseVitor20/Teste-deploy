@@ -13,24 +13,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install sshpass
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y sshpass
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.HOSTGATOR_SSH_KEY }} # teste 5
 
     - name: Install dependencies
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd public_html/ && composer install --no-dev --optimize-autoloader"
+        ssh -o StrictHostKeyChecking=no Jose_testes@starttofinish.com.br "cd public_html && composer install --no-dev --optimize-autoloader"
 
     - name: Run migrations
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd public_html/ && php artisan migrate --force"
+        ssh -o StrictHostKeyChecking=no Jose_testes@starttofinish.com.br "cd public_html && php artisan migrate --force"
 
     - name: Deploy application
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" rsync -avz --exclude='.env' --exclude='.git' --exclude='node_modules' --exclude='storage' ./ ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }}:public_html/
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd public_html/ && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+        rsync -avz --exclude='.env' --exclude='.git' --exclude='node_modules' --exclude='storage' ./ Jose_testes@starttofinish.com.br:${{ secrets.HOSTGATOR_DEPLOY_DIR }}
+        ssh -o StrictHostKeyChecking=no Jose_testes@starttofinish.com.br "cd public_html && php artisan config:cache && php artisan route:cache && php artisan view:cache"
 
     - name: Restart services (if needed)
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "sudo service php-fpm restart"
+        ssh -o StrictHostKeyChecking=no Jose_testes@starttofinish.com.br "sudo service php-fpm restart"
