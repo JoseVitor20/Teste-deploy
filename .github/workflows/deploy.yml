@@ -34,3 +34,5 @@ jobs:
     - name: Restart services (if needed)
       run: |
         sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "sudo service php-fpm restart"
+
+		# teste
