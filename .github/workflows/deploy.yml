@@ -1,35 +1,24 @@
-name: "Deploy para hospedagem"
+- name: "Criar ZIP do código"
+  run: zip -r deploy.zip . -x "*.git*" "*node_modules*"
 
-on:
-  push:
-    branches:
-      - main
+- name: "Enviar arquivo ZIP"
+  uses: appleboy/scp-action@v0.1.4
+  with:
+    host: "${{ secrets.FTP_SERVER }}"
+    username: "${{ secrets.FTP_USER }}"
+    password: "${{ secrets.FTP_PASSWORD }}"
+    source: "deploy.zip"
+    target: "public_html"
 
-jobs:
-  build_deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: "Baixar o código"
-        uses: actions/checkout@v4
-
-      - name: "Copiar arquivos para hospedagem"
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: "${{ secrets.FTP_SERVER }}"
-          username: "${{ secrets.FTP_USER }}"
-          password: "${{ secrets.FTP_PASSWORD }}"
-          source: "."
-          target: "public_html"
-
-      - name: "Construir a aplicação"
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: "${{ secrets.FTP_SERVER }}"
-          username: "${{ secrets.FTP_USER }}"
-          password: "${{ secrets.FTP_PASSWORD }}"
-          script: |
-            cd public_html	
-            rsync -e "ssh -oKexAlgorithms=+diffie-hellman-group14-sha256" -avz --exclude='.git' --exclude='node_modules' ./ ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }}:public_html/
-            composer install --no-dev --no-progress -a
-            php artisan optimize
+- name: "Extrair e configurar aplicação"
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: "${{ secrets.FTP_SERVER }}"
+    username: "${{ secrets.FTP_USER }}"
+    password: "${{ secrets.FTP_PASSWORD }}"
+    script: |
+      cd public_html
+      unzip -o deploy.zip
+      rm deploy.zip
+      composer install --no-dev --no-progress -a
+      php artisan optimize
