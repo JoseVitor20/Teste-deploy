@@ -1,10 +1,3 @@
-RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/testes/public/
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ /testes/public/$1 [L,QSA]
-DirectoryIndex index.php
-
-
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -18,7 +11,7 @@ DirectoryIndex index.php
 
     # Handle X-XSRF-Token Header
     RewriteCond %{HTTP:x-xsrf-token} .
-    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X_XSRF_TOKEN}]
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
