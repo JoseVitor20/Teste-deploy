@@ -33,9 +33,9 @@ jobs:
       - name: Executar comandos no servidor (via SSH)
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          host: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
           script: |
             cd ~/public_html
             composer install --no-dev --optimize-autoloader
