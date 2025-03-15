@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: "Baixar o código"
+        uses: actions/checkout@v4
+
       - name: "Criar ZIP do código"
-        run: zip -r deploy.zip . -x "*.git*" "*node_modules*"
+        run: zip -r deploy.zip . -x ".git/*" "node_modules/*"
 
       - name: "Enviar arquivo ZIP"
         uses: appleboy/scp-action@v0.1.4
