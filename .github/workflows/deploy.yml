@@ -16,7 +16,7 @@ jobs:
 
       - name: Enviar arquivos via FTP para public_html
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
-        with:
+        with: # teste 1
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
