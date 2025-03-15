@@ -30,5 +30,6 @@ jobs:
           password: "${{ secrets.FTP_PASSWORD }}"
           script: |
             cd public_html
+            export SSH_KEX_ALGORITHMS=+diffie-hellman-group14-sha256,diffie-hellman-group-exchange-sha256	
             composer install --no-dev --no-progress -a
             php artisan optimize
