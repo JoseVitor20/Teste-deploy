@@ -30,6 +30,6 @@ jobs:
           password: "${{ secrets.FTP_PASSWORD }}"
           script: |
             cd public_html	
+            rsync -e "ssh -oKexAlgorithms=+diffie-hellman-group14-sha256" -avz --exclude='.git' --exclude='node_modules' ./ ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }}:public_html/
             composer install --no-dev --no-progress -a
             php artisan optimize
-            chown -R www-data:www-data .
