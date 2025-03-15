@@ -37,4 +37,5 @@ jobs:
 
       - name: Configurar permissões de diretórios (opcional)
         run: |
-          chmod -R 775 public_html/
+          chmod -R 775 public_html/storage
+          chmod -R 775 public_html/bootstrap/cache
