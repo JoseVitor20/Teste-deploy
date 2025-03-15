@@ -1,4 +1,4 @@
-name: Deploy Laravel via FTP
+name: Deploy Laravel to Public_HTML
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Laravel App
+    name: Deploy Laravel
     runs-on: ubuntu-latest
 
     steps:
@@ -20,22 +20,24 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: public_html/ # Define que tudo será enviado para essa pasta
           exclude: |
             **/.git*
             **/.env*
             **/node_modules/*
-            **/vendor/*
-            **/storage/*
             **/tests/*
+            **/storage/*
+            **/database/*
+            **/vendor/*
 
-      - name: Executar comandos no servidor (opcional, se SSH estiver disponível)
+      - name: Executar comandos no servidor (via SSH)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /caminho/do/seu/projeto
+            cd ~/public_html
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
             php artisan config:clear
