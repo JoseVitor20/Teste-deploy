@@ -1,24 +1,36 @@
-- name: "Criar ZIP do código"
-  run: zip -r deploy.zip . -x "*.git*" "*node_modules*"
+name: "Deploy para hospedagem"
 
-- name: "Enviar arquivo ZIP"
-  uses: appleboy/scp-action@v0.1.4
-  with:
-    host: "${{ secrets.FTP_SERVER }}"
-    username: "${{ secrets.FTP_USER }}"
-    password: "${{ secrets.FTP_PASSWORD }}"
-    source: "deploy.zip"
-    target: "public_html"
+on:
+  push:
+    branches:
+      - main
 
-- name: "Extrair e configurar aplicação"
-  uses: appleboy/ssh-action@v1.0.3
-  with:
-    host: "${{ secrets.FTP_SERVER }}"
-    username: "${{ secrets.FTP_USER }}"
-    password: "${{ secrets.FTP_PASSWORD }}"
-    script: |
-      cd public_html
-      unzip -o deploy.zip
-      rm deploy.zip
-      composer install --no-dev --no-progress -a
-      php artisan optimize
+jobs:
+  build_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Criar ZIP do código"
+        run: zip -r deploy.zip . -x "*.git*" "*node_modules*"
+
+      - name: "Enviar arquivo ZIP"
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: "${{ secrets.FTP_SERVER }}"
+          username: "${{ secrets.FTP_USER }}"
+          password: "${{ secrets.FTP_PASSWORD }}"
+          source: "deploy.zip"
+          target: "public_html"
+
+      - name: "Extrair e configurar aplicação"
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: "${{ secrets.FTP_SERVER }}"
+          username: "${{ secrets.FTP_USER }}"
+          password: "${{ secrets.FTP_PASSWORD }}"
+          script: |
+            cd public_html
+            unzip -o deploy.zip
+            rm deploy.zip
+            composer install --no-dev --no-progress -a
+            php artisan optimize
