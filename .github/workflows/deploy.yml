@@ -1,4 +1,4 @@
-name: Deploy Laravel to Public_HTML
+name: Deploy Laravel para public_html via FTP
 
 on:
   push:
@@ -7,20 +7,20 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Laravel
+    name: Deploy Laravel via FTP
     runs-on: ubuntu-latest
 
     steps:
       - name: Obter código mais recente
         uses: actions/checkout@v2
 
-      - name: Enviar arquivos via FTP
+      - name: Enviar arquivos via FTP para public_html
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/ # Define que tudo será enviado para essa pasta
+          server-dir: public_html/
           exclude: |
             **/.git*
             **/.env*
@@ -30,17 +30,12 @@ jobs:
             **/database/*
             **/vendor/*
 
-      - name: Executar comandos no servidor (via SSH)
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          script: |
-            cd ~/public_html
-            composer install --no-dev --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:clear
-            php artisan cache:clear
-            php artisan route:cache
-            php artisan view:cache
+      - name: Sincronizar vendor (instalar dependências)
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          php composer.phar install --no-dev --optimize-autoloader
+
+      - name: Configurar permissões de diretórios (opcional)
+        run: |
+          chmod -R 775 public_html/storage
+          chmod -R 775 public_html/bootstrap/cache
