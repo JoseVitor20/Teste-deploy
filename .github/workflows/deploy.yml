@@ -35,7 +35,9 @@ jobs:
           curl -sS https://getcomposer.org/installer | php
           php composer.phar install --no-dev --optimize-autoloader
 
-      - name: Configurar permissões de diretórios (opcional)
+      - name: Criar pastas e configurar permissões
         run: |
+          mkdir -p public_html/storage
+          mkdir -p public_html/bootstrap/cache
           chmod -R 775 public_html/storage
           chmod -R 775 public_html/bootstrap/cache
