@@ -1,22 +1,33 @@
-            name: Deploy website com push
+name: "Deploy para hospedagem"
+on:
+push:
+branches:
+  - main
 
-            on:
-            push:
-                branches:
-                - main
+jobs:
+build_deploy:
+runs-on: ubuntu-latest
 
-            jobs:
-            web-deploy:
-                name: Deploy
-                runs-on: ubuntu-latest
+steps:
+  - name: "Baixar o código"
+    uses: actions/checkout@v4
 
-                steps:
-                - name: Obter o código mais recente
-                    uses: actions/checkout@v2
+  - name: "Copiar arquivos para hospedagem"
+    uses: appleboy/scp-action@0.1.7
+    with:
+    host: "${{ secrets.FTP_SERVER }}"
+    username: "${{ secrets.FTP_USER }}"
+    password: "${{ secrets.FTP_PASSWORD }}"
+    source: "."
+    target: "public_html"
 
-                - name: Sync files
-                    uses: SamKirkland/FTP-Deploy-Action@4.0.0
-                    with:
-                    server: ${{ secrets.FTP_SERVER }}
-                    username: ${{ secrets.FTP_USER }}
-                    password: ${{ secrets.FTP_PASSWORD }}
+  - name: "Construir a aplicação"
+    uses: appleboy/ssh-action@v1.0.3
+    with:
+    host: "${{ secrets.FTP_SERVER }}"
+    username: "${{ secrets.FTP_USER }}"
+    password: "${{ secrets.FTP_PASSWORD }}"
+    script: |
+      cd /public_html
+      composer install --no-dev --no-progress -a 
+      php artisan optimize
