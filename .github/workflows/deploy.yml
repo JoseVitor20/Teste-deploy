@@ -29,7 +29,7 @@ jobs:
           username: "${{ secrets.FTP_USER }}"
           password: "${{ secrets.FTP_PASSWORD }}"
           script: |
-            cd public_html
-            export SSH_KEX_ALGORITHMS=+diffie-hellman-group14-sha256,diffie-hellman-group-exchange-sha256	
+            cd public_html	
             composer install --no-dev --no-progress -a
             php artisan optimize
+            chown -R www-data:www-data .
