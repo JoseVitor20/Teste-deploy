@@ -20,16 +20,16 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd ${{ secrets.HOSTGATOR_DEPLOY_DIR }} && composer install --no-dev --optimize-autoloader"
+        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd public_html/ && composer install --no-dev --optimize-autoloader"
 
     - name: Run migrations
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd ${{ secrets.HOSTGATOR_DEPLOY_DIR }} && php artisan migrate --force"
+        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd public_html/ && php artisan migrate --force"
 
     - name: Deploy application
       run: |
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" rsync -avz --exclude='.env' --exclude='.git' --exclude='node_modules' --exclude='storage' ./ ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }}:${{ secrets.HOSTGATOR_DEPLOY_DIR }}
-        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd ${{ secrets.HOSTGATOR_DEPLOY_DIR }} && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+        sshpass -p "${{ secrets.FTP_PASSWORD }}" rsync -avz --exclude='.env' --exclude='.git' --exclude='node_modules' --exclude='storage' ./ ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }}:public_html/
+        sshpass -p "${{ secrets.FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.FTP_USER }}@${{ secrets.FTP_SERVER }} "cd public_html/ && php artisan config:cache && php artisan route:cache && php artisan view:cache"
 
     - name: Restart services (if needed)
       run: |
