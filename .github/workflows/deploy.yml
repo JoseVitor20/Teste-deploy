@@ -11,33 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Obter código mais recente
-        uses: actions/checkout@v2
+    - name: Obter código mais recente
+      uses: actions/checkout@v2
 
-      - name: Enviar arquivos via FTP para public_html
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/
-          exclude: |
-            **/.git*
-            **/.env*
-            **/node_modules/*
-            **/tests/*
-            **/storage/*
-            **/database/*
-            **/vendor/*
+    - name: Enviar arquivos via FTP para public_html
+      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: public_html/ # Envia para public_html
+        local-dir: ./ # Envia a partir do diretório raiz do repositório (não duplicando public_html)
 
-      - name: Sincronizar vendor (instalar dependências)
-        run: |
-          curl -sS https://getcomposer.org/installer | php
-          php composer.phar install --no-dev --optimize-autoloader
+        exclude: |
+          **/.git*
+          **/.env*
+          **/node_modules/*
+          **/tests/*
+          **/storage/*
+          **/database/*
+          **/vendor/*
 
-      - name: Criar pastas e configurar permissões
-        run: |
-          mkdir -p public_html/storage
-          mkdir -p public_html/bootstrap/cache
-          chmod -R 775 public_html/storage
-          chmod -R 775 public_html/bootstrap/cache
+    - name: Sincronizar vendor (instalar dependências)
+    run: |
+    	curl -sS https://getcomposer.org/installer | php
+    	php composer.phar install --no-dev --optimize-autoloader
+    
+    - name: Criar pastas e configurar permissões
+    run: |
+    	mkdir -p public_html/storage
+    	mkdir -p public_html/bootstrap/cache
+    	chmod -R 775 public_html/storage
+    	chmod -R 775 public_html/bootstrap/cache
